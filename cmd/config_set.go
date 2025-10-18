@@ -72,6 +72,8 @@ you want to change. Other options will remain unchanged.`,
 				set.Branding.DisableExternal, err = getBool(flags, flag.Name)
 			case "branding.disableUsedPercentage":
 				set.Branding.DisableUsedPercentage, err = getBool(flags, flag.Name)
+			case "branding.disableUserProfile":
+				set.Branding.DisableUserProfile, err = getBool(flags, flag.Name)
 			case "branding.files":
 				set.Branding.Files, err = getString(flags, flag.Name)
 			case "file-mode":
