@@ -86,6 +86,11 @@ override the options.`,
 			return err
 		}
 
+		brandingDefaultLoginUser, err := getString(flags, "branding.defaultLoginUser")
+		if err != nil {
+			return err
+		}
+
 		s := &settings.Settings{
 			Key:                   key,
 			Signup:                signup,
@@ -99,6 +104,7 @@ override the options.`,
 				DisableExternal:       brandingDisableExternal,
 				DisableUsedPercentage: brandingDisableUsedPercentage,
 				DisableUserProfile:    brandingDisableUserProfile,
+				DefaultLoginUser:      brandingDefaultLoginUser,
 				Theme:                 brandingTheme,
 				Files:                 brandingFiles,
 			},
