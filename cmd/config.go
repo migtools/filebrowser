@@ -50,6 +50,7 @@ func addConfigFlags(flags *pflag.FlagSet) {
 	flags.Bool("branding.disableExternal", false, "disable external links such as GitHub links")
 	flags.Bool("branding.disableUsedPercentage", false, "disable used disk percentage graph")
 	flags.Bool("branding.disableUserProfile", false, "disable user profile in sidebar and settings/profile page")
+	flags.String("branding.defaultLoginUser", "", "default username for login (hides username field)")
 	// NB: these are string so they can be presented as octal in the help text
 	// as that's the conventional representation for modes in Unix.
 	flags.String("file-mode", fmt.Sprintf("%O", settings.DefaultFileMode), "Mode bits that new files are created with")
@@ -203,6 +204,7 @@ func printSettings(ser *settings.Server, set *settings.Settings, auther auth.Aut
 	fmt.Fprintf(w, "\tDisable external links:\t%t\n", set.Branding.DisableExternal)
 	fmt.Fprintf(w, "\tDisable used disk percentage graph:\t%t\n", set.Branding.DisableUsedPercentage)
 	fmt.Fprintf(w, "\tDisable user profile:\t%t\n", set.Branding.DisableUserProfile)
+	fmt.Fprintf(w, "\tDefault login user:\t%s\n", set.Branding.DefaultLoginUser)
 	fmt.Fprintf(w, "\tColor:\t%s\n", set.Branding.Color)
 	fmt.Fprintf(w, "\tTheme:\t%s\n", set.Branding.Theme)
 	fmt.Fprintln(w, "\nServer:")

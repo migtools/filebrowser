@@ -9,6 +9,7 @@
       <div v-if="error !== ''" class="wrong">{{ error }}</div>
 
       <input
+        v-if="!defaultLoginUser"
         autofocus
         class="input input--block"
         type="text"
@@ -17,6 +18,7 @@
         :placeholder="t('login.username')"
       />
       <input
+        :autofocus="!!defaultLoginUser"
         class="input input--block"
         type="password"
         v-model="password"
@@ -53,6 +55,7 @@ import {
   recaptcha,
   recaptchaKey,
   signup,
+  defaultLoginUser,
 } from "@/utils/constants";
 import { inject, onMounted, ref } from "vue";
 import { useI18n } from "vue-i18n";
@@ -61,7 +64,7 @@ import { useRoute, useRouter } from "vue-router";
 // Define refs
 const createMode = ref<boolean>(false);
 const error = ref<string>("");
-const username = ref<string>("");
+const username = ref<string>(defaultLoginUser);
 const password = ref<string>("");
 const passwordConfirm = ref<string>("");
 
