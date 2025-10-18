@@ -71,6 +71,11 @@ override the options.`,
 			return err
 		}
 
+		brandingDisableUserProfile, err := getBool(flags, "branding.disableUserProfile")
+		if err != nil {
+			return err
+		}
+
 		brandingTheme, err := getString(flags, "branding.theme")
 		if err != nil {
 			return err
@@ -93,6 +98,7 @@ override the options.`,
 				Name:                  brandingName,
 				DisableExternal:       brandingDisableExternal,
 				DisableUsedPercentage: brandingDisableUsedPercentage,
+				DisableUserProfile:    brandingDisableUserProfile,
 				Theme:                 brandingTheme,
 				Files:                 brandingFiles,
 			},
