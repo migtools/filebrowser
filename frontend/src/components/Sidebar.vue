@@ -2,7 +2,7 @@
   <div v-show="active" @click="closeHovers" class="overlay"></div>
   <nav :class="{ active }">
     <template v-if="isLoggedIn">
-      <button @click="toAccountSettings" class="action">
+      <button v-if="!disableUserProfile" @click="toAccountSettings" class="action">
         <i class="material-icons">person</i>
         <span>{{ user.username }}</span>
       </button>
@@ -128,6 +128,7 @@ import {
   hideLoginButton,
   disableExternal,
   disableUsedPercentage,
+  disableUserProfile,
   noAuth,
   logoutPage,
   loginPage,
@@ -160,7 +161,8 @@ export default {
     version: () => version,
     disableExternal: () => disableExternal,
     disableUsedPercentage: () => disableUsedPercentage,
-    canLogout: () => !noAuth && (loginPage || logoutPage !== "/login"),
+    disableUserProfile: () => disableUserProfile,
+    canLogout: () => !noAuth && loginPage,
   },
   methods: {
     ...mapActions(useLayoutStore, ["closeHovers", "showHover"]),
