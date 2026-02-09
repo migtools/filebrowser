@@ -1,29 +1,46 @@
-## Multi-stage build for File Browser - Kubernetes-optimized
-## Simplified runtime container for use with init containers and K8s ConfigMaps/Secrets
+## Multi-stage build for File Browser
 
-# Build stage
-FROM --platform=$BUILDPLATFORM registry.access.redhat.com/ubi9/nodejs-20:latest AS frontend-builder
+# =============================================================================
+# Stage 1: Install frontend dependencies only when needed
+# =============================================================================
+FROM registry.access.redhat.com/ubi9/nodejs-24:latest AS frontend-deps
 
-USER root
+USER 0
+WORKDIR /app
 
-# Build-time arguments
-ARG BUILDPLATFORM
-ARG TARGETOS
-ARG TARGETARCH
+# Install pnpm globally
+RUN npm install -g pnpm@10.29.2
 
-# Install pnpm
-RUN npm install -g pnpm@9.15.4
-
-# Copy frontend source
-WORKDIR /src/frontend
+# Copy only dependency files for better layer caching
 COPY frontend/package.json frontend/pnpm-lock.yaml ./
+
+# Install dependencies
 RUN pnpm install --frozen-lockfile
 
+# =============================================================================
+# Stage 2: Build frontend
+# =============================================================================
+FROM registry.access.redhat.com/ubi9/nodejs-24:latest AS frontend-builder
+
+USER 0
+WORKDIR /app
+
+# Install pnpm (needed for build scripts)
+RUN npm install -g pnpm@10.29.2
+
+# Copy node_modules from deps stage
+COPY --from=frontend-deps /app/node_modules ./node_modules
+
+# Copy frontend source
 COPY frontend/ ./
+
+# Build the frontend
 RUN pnpm run build
 
-# Backend builder stage
-FROM --platform=$BUILDPLATFORM registry.access.redhat.com/ubi9/go-toolset:1.22 AS backend-builder
+# =============================================================================
+# Stage 3: Build Go backend
+# =============================================================================
+FROM --platform=$BUILDPLATFORM quay.io/konveyor/builder:ubi9-latest AS backend-builder
 
 USER root
 
@@ -40,12 +57,9 @@ ENV GOARCH=${TARGETARCH}
 ENV CGO_ENABLED=0
 ENV GOTOOLCHAIN=auto
 
-# Install build dependencies for cross-compilation
-RUN dnf install -y gcc gcc-c++ && dnf clean all
-
 WORKDIR /src
 
-# Copy go module files
+# Copy go module files first for better layer caching
 COPY go.mod go.sum ./
 RUN go mod download
 
@@ -53,49 +67,62 @@ RUN go mod download
 COPY . .
 
 # Copy built frontend from previous stage
-COPY --from=frontend-builder /src/frontend/dist ./frontend/dist
+COPY --from=frontend-builder /app/dist ./frontend/dist
 
 # Build the backend with embedded frontend
-RUN GOOS=${TARGETOS:-linux} GOARCH=${TARGETARCH} \
-    go build -ldflags "-X 'github.com/filebrowser/filebrowser/v2/version.Version=${VERSION:-dev}' \
-                       -X 'github.com/filebrowser/filebrowser/v2/version.CommitSHA=${VERSION_HASH:-unknown}'" \
+RUN go build -ldflags "-s -w \
+    -X 'github.com/filebrowser/filebrowser/v2/version.Version=${VERSION:-dev}' \
+    -X 'github.com/filebrowser/filebrowser/v2/version.CommitSHA=${VERSION_HASH:-unknown}'" \
     -o filebrowser .
 
-# Final runtime stage - minimal, for use with init containers
+# =============================================================================
+# Stage 4: Final runtime image - minimal footprint
+# =============================================================================
 FROM registry.access.redhat.com/ubi9-minimal:latest
 
-# Install runtime dependencies (curl-minimal is already in ubi9-minimal)
-RUN microdnf install -y ca-certificates tzdata shadow-utils && \
-    microdnf clean all
+# Labels for container metadata
+LABEL name="filebrowser" \
+      summary="File Browser - Web-based file manager" \
+      description="A web-based file manager with support for multiple users and permissions" \
+      io.k8s.display-name="File Browser" \
+      io.k8s.description="A web-based file manager with support for multiple users and permissions" \
+      io.openshift.tags="filebrowser,filemanager,web"
 
-# Create non-root user and directories
-RUN groupadd -g 1000 filebrowser && \
-    useradd -u 1000 -g filebrowser -s /sbin/nologin -M filebrowser && \
+# Install runtime dependencies and clean up in single layer
+RUN microdnf install -y --nodocs \
+        ca-certificates \
+        tzdata \
+        shadow-utils \
+        curl-minimal && \
+    microdnf clean all && \
+    rm -rf /var/cache/yum
+
+# Create non-root user and required directories
+RUN groupadd -g 1001 filebrowser && \
+    useradd -u 1001 -g filebrowser -s /sbin/nologin -M filebrowser && \
     mkdir -p /srv /config /database && \
-    chown -R filebrowser:filebrowser /srv /config /database
+    chown -R 1001:1001 /srv /config /database
 
 # Copy binary from builder
-COPY --from=backend-builder --chown=filebrowser:filebrowser /src/filebrowser /usr/local/bin/filebrowser
+COPY --from=backend-builder --chown=1001:1001 /src/filebrowser /usr/local/bin/filebrowser
 
-# Healthcheck script
-COPY --chown=filebrowser:filebrowser docker/ubi/healthcheck.sh /usr/local/bin/healthcheck.sh
+# Copy healthcheck script
+COPY --chown=1001:1001 docker/ubi/healthcheck.sh /usr/local/bin/healthcheck.sh
 RUN chmod +x /usr/local/bin/healthcheck.sh
 
-# Switch to non-root user
-USER filebrowser
+# Switch to non-root user (using numeric ID for OpenShift compatibility)
+USER 1001
 
-# Define volumes
+# Define volumes for persistent data
 VOLUME ["/srv", "/config", "/database"]
 
 # Expose default port
 EXPOSE 8080
 
-# Healthcheck
-HEALTHCHECK --start-period=5s --interval=10s --timeout=3s --retries=3 \
+# Healthcheck using the script
+HEALTHCHECK --start-period=5s --interval=30s --timeout=3s --retries=3 \
     CMD ["/usr/local/bin/healthcheck.sh"]
 
-# Direct entrypoint - all configuration via environment variables
+# Direct entrypoint - configuration via FB_* environment variables
 ENTRYPOINT ["/usr/local/bin/filebrowser"]
-
-# No default args - filebrowser reads from FB_* environment variables
 CMD []
