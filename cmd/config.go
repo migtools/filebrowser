@@ -353,6 +353,10 @@ func getSettings(flags *pflag.FlagSet, set *settings.Settings, ser *settings.Ser
 			set.Branding.DisableExternal, err = flags.GetBool(flag.Name)
 		case "branding.disableUsedPercentage":
 			set.Branding.DisableUsedPercentage, err = flags.GetBool(flag.Name)
+		case "branding.disableUserProfile":
+			set.Branding.DisableUserProfile, err = flags.GetBool(flag.Name)
+		case "branding.defaultLoginUser":
+			set.Branding.DefaultLoginUser, err = flags.GetString(flag.Name)
 		case "tus.chunkSize":
 			set.Tus.ChunkSize, err = flags.GetUint64(flag.Name)
 		case "tus.retryCount":
