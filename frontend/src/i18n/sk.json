@@ -43,7 +43,11 @@
     "upload": "Nahrať",
     "openFile": "Otvoriť súbor",
     "discardChanges": "Zahodiť",
-    "saveChanges": "Save changes"
+    "stopSearch": "Stop searching",
+    "saveChanges": "Uložiť zmeny",
+    "editAsText": "Edit as Text",
+    "increaseFontSize": "Increase font size",
+    "decreaseFontSize": "Decrease font size"
   },
   "download": {
     "downloadFile": "Stiahnuť súbor",
@@ -75,7 +79,16 @@
     "sortByLastModified": "Zoradiť podľa dátumu",
     "sortByName": "Zoradiť podľa názvu",
     "sortBySize": "Zoradiť podľa veľkosti",
-    "noPreview": "Pre tento súbor nie je dostupný náhľad."
+    "noPreview": "Pre tento súbor nie je dostupný náhľad.",
+    "csvTooLarge": "CSV file is too large for preview (>5MB). Please download to view.",
+    "csvLoadFailed": "Failed to load CSV file.",
+    "showingRows": "Showing {count} row(s)",
+    "columnSeparator": "Column Separator",
+    "csvSeparators": {
+      "comma": "Comma (,)",
+      "semicolon": "Semicolon (;)",
+      "both": "Both (,) and (;)"
+    }
   },
   "help": {
     "click": "vyberie súbor alebo priečinok",
@@ -102,8 +115,9 @@
     "username": "Používateľské meno",
     "usernameTaken": "Meno je už obsadené",
     "wrongCredentials": "Nesprávne prihlasovacie údaje",
+    "passwordTooShort": "Password must be at least {min} characters",
     "logout_reasons": {
-      "inactivity": "You have been logged out due to inactivity."
+      "inactivity": "Boli ste odhlásení z dôvodu nečinnosti."
     }
   },
   "permanent": "Trvalé",
@@ -166,6 +180,7 @@
     "allowNew": "Vytvárať nové súbory a priečinky",
     "allowPublish": "Zverejňovať nové príspevky a stránky",
     "allowSignup": "Povoliť registráciu používateľov",
+    "hideLoginButton": "Hide the login button from public pages",
     "avoidChanges": "(nechajte prázdne, aby sa nezmenilo)",
     "branding": "Vlastný vzhľad",
     "brandingDirectoryPath": "Cesta k priečinku s vlastným vzhľadom",
@@ -217,6 +232,7 @@
     "permissions": "Práva",
     "permissionsHelp": "Môžete nastaviť používateľa, aby bol administrátorom alebo vybrať práva jednotlivo. Ak zvolíte \"Administrator\", všetky ďalšie budú automaticky zaškrtnuté. Manažment používateľov ostáva v správe administrátora.\n",
     "profileSettings": "Nastavenia profilu",
+    "redirectAfterCopyMove": "Redirect to destination after copy/move",
     "ruleExample1": "blokuje prístup ku všetkým súborom začínajúcim bodkou (napríklad .git, .gitignore) v každom priečinku.\n",
     "ruleExample2": "blokuje prístup k súborom s názvom Caddyfile v koreňovom priečinku.",
     "rules": "Pravidlá",
@@ -243,7 +259,8 @@
     "userManagement": "Správa používateľov",
     "userUpdated": "Používateľ upravený!",
     "username": "Meno používateľa",
-    "users": "Používatelia"
+    "users": "Používatelia",
+    "currentPassword": "Your Current Password"
   },
   "sidebar": {
     "help": "Pomoc",

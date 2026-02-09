@@ -1,8 +1,6 @@
 const name: string = window.FileBrowser.Name || "File Browser";
 const disableExternal: boolean = window.FileBrowser.DisableExternal;
 const disableUsedPercentage: boolean = window.FileBrowser.DisableUsedPercentage;
-const disableUserProfile: boolean = window.FileBrowser.DisableUserProfile;
-const defaultLoginUser: string = window.FileBrowser.DefaultLoginUser || "";
 const baseURL: string = window.FileBrowser.BaseURL;
 const staticURL: string = window.FileBrowser.StaticURL;
 const recaptcha: string = window.FileBrowser.ReCaptcha;
@@ -12,6 +10,7 @@ const version: string = window.FileBrowser.Version;
 const logoURL = `${staticURL}/img/logo.svg`;
 const noAuth: boolean = window.FileBrowser.NoAuth;
 const authMethod = window.FileBrowser.AuthMethod;
+const logoutPage: string = window.FileBrowser.LogoutPage;
 const loginPage: boolean = window.FileBrowser.LoginPage;
 const theme: UserTheme = window.FileBrowser.Theme;
 const enableThumbs: boolean = window.FileBrowser.EnableThumbs;
@@ -20,13 +19,12 @@ const enableExec: boolean = window.FileBrowser.EnableExec;
 const tusSettings = window.FileBrowser.TusSettings;
 const origin = window.location.origin;
 const tusEndpoint = `/api/tus`;
+const hideLoginButton = window.FileBrowser.HideLoginButton;
 
 export {
   name,
   disableExternal,
   disableUsedPercentage,
-  disableUserProfile,
-  defaultLoginUser,
   baseURL,
   logoURL,
   recaptcha,
@@ -35,6 +33,7 @@ export {
   version,
   noAuth,
   authMethod,
+  logoutPage,
   loginPage,
   theme,
   enableThumbs,
@@ -43,4 +42,5 @@ export {
   tusSettings,
   origin,
   tusEndpoint,
+  hideLoginButton,
 };

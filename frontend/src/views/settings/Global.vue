@@ -19,6 +19,11 @@
           </p>
 
           <p>
+            <input type="checkbox" v-model="settings.hideLoginButton" />
+            {{ t("settings.hideLoginButton") }}
+          </p>
+
+          <p>
             <label class="small">{{ t("settings.userHomeBasePath") }}</label>
             <input
               class="input input--block"
@@ -86,15 +91,6 @@
               id="branding-used-disk"
             />
             {{ t("settings.disableUsedDiskPercentage") }}
-          </p>
-
-          <p>
-            <input
-              type="checkbox"
-              v-model="settings.branding.disableUserProfile"
-              id="branding-user-profile"
-            />
-            {{ t("settings.disableUserProfile") }}
           </p>
 
           <p>

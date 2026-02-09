@@ -2,7 +2,7 @@
   <div v-show="active" @click="closeHovers" class="overlay"></div>
   <nav :class="{ active }">
     <template v-if="isLoggedIn">
-      <button v-if="!disableUserProfile" @click="toAccountSettings" class="action">
+      <button @click="toAccountSettings" class="action">
         <i class="material-icons">person</i>
         <span>{{ user.username }}</span>
       </button>
@@ -63,6 +63,7 @@
     </template>
     <template v-else>
       <router-link
+        v-if="!hideLoginButton"
         class="action"
         to="/login"
         :aria-label="$t('sidebar.login')"
@@ -124,10 +125,11 @@ import * as auth from "@/utils/auth";
 import {
   version,
   signup,
+  hideLoginButton,
   disableExternal,
   disableUsedPercentage,
-  disableUserProfile,
   noAuth,
+  logoutPage,
   loginPage,
 } from "@/utils/constants";
 import { files as api } from "@/api";
@@ -154,11 +156,11 @@ export default {
       return this.currentPromptName === "sidebar";
     },
     signup: () => signup,
+    hideLoginButton: () => hideLoginButton,
     version: () => version,
     disableExternal: () => disableExternal,
     disableUsedPercentage: () => disableUsedPercentage,
-    disableUserProfile: () => disableUserProfile,
-    canLogout: () => !noAuth && loginPage,
+    canLogout: () => !noAuth && (loginPage || logoutPage !== "/login"),
   },
   methods: {
     ...mapActions(useLayoutStore, ["closeHovers", "showHover"]),
