@@ -42,6 +42,7 @@
     "update": "Update",
     "upload": "Upload",
     "openFile": "Open file",
+    "openDirect": "View raw",
     "discardChanges": "Discard",
     "stopSearch": "Stop searching",
     "saveChanges": "Save changes",
@@ -88,7 +89,8 @@
       "comma": "Comma (,)",
       "semicolon": "Semicolon (;)",
       "both": "Both (,) and (;)"
-    }
+    },
+    "fileEncoding": "File Encoding"
   },
   "help": {
     "click": "select file or directory",
@@ -202,7 +204,6 @@
     "defaultUserDescription": "These are the default settings for new users.",
     "disableExternalLinks": "Disable external links (except documentation)",
     "disableUsedDiskPercentage": "Disable used disk percentage graph",
-    "disableUserProfile": "Disable user profile",
     "documentation": "documentation",
     "examples": "Examples",
     "executeOnShell": "Execute on shell",
