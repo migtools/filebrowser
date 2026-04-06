@@ -1,19 +1,19 @@
 package fbhttp
 
 import (
+	"compress/gzip"
 	"encoding/json"
 	"errors"
 	"fmt"
-	"io/fs"
+	"html/template"
 	"io"
-	"compress/gzip"
+	"io/fs"
 	"log"
 	"net/http"
 	"os"
 	"path"
 	"path/filepath"
 	"strings"
-	"text/template"
 
 	"github.com/filebrowser/filebrowser/v2/auth"
 	"github.com/filebrowser/filebrowser/v2/settings"
@@ -33,8 +33,6 @@ func handleWithStaticData(w http.ResponseWriter, _ *http.Request, d *data, fSys 
 		"Name":                  d.settings.Branding.Name,
 		"DisableExternal":       d.settings.Branding.DisableExternal,
 		"DisableUsedPercentage": d.settings.Branding.DisableUsedPercentage,
-		"DisableUserProfile":    d.settings.Branding.DisableUserProfile,
-		"DefaultLoginUser":      d.settings.Branding.DefaultLoginUser,
 		"Color":                 d.settings.Branding.Color,
 		"BaseURL":               d.server.BaseURL,
 		"Version":               version.Version,
@@ -87,7 +85,7 @@ func handleWithStaticData(w http.ResponseWriter, _ *http.Request, d *data, fSys 
 		return http.StatusInternalServerError, err
 	}
 
-	data["Json"] = strings.ReplaceAll(string(b), `'`, `\'`)
+	data["Json"] = template.JS(strings.ReplaceAll(string(b), `'`, `\'`))
 
 	fileContents, err := fs.ReadFile(fSys, file)
 	if err != nil {
@@ -155,7 +153,7 @@ func getStaticHandlers(store *storage.Storage, server *settings.Server, assetsFs
 		defer f.Close()
 
 		acceptEncoding := r.Header.Get("Accept-Encoding")
-		if strings.Contains(acceptEncoding, "gzip") {		
+		if strings.Contains(acceptEncoding, "gzip") {
 			w.Header().Set("Content-Encoding", "gzip")
 			w.Header().Set("Content-Type", "application/javascript; charset=utf-8")
 
@@ -170,7 +168,7 @@ func getStaticHandlers(store *storage.Storage, server *settings.Server, assetsFs
 			defer gzReader.Close()
 
 			w.Header().Set("Content-Type", "application/javascript; charset=utf-8")
-			
+
 			if _, err := io.Copy(w, gzReader); err != nil {
 				return http.StatusInternalServerError, err
 			}

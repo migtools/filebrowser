@@ -84,7 +84,6 @@
             }"
             :epubOptions="{
               allowPopups: true,
-              allowScriptedContent: true,
             }"
             @update:location="locationChange"
           />
@@ -311,7 +310,11 @@ const isPdf = computed(() => fileStore.req?.extension.toLowerCase() == ".pdf");
 const isEpub = computed(
   () => fileStore.req?.extension.toLowerCase() == ".epub"
 );
-const isCsv = computed(() => fileStore.req?.extension.toLowerCase() == ".csv");
+const isCsv = computed(
+  () =>
+    fileStore.req?.extension.toLowerCase() == ".csv" &&
+    fileStore.req.size <= CSV_MAX_SIZE
+);
 
 const isResizeEnabled = computed(() => resizePreview);
 
