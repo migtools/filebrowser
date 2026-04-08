@@ -5,7 +5,7 @@
     <div id="nav">
       <div class="wrapper">
         <ul>
-          <router-link to="/settings/profile" v-if="!disableUserProfile"
+          <router-link to="/settings/profile"
             ><li :class="{ active: $route.path === '/settings/profile' }">
               {{ t("settings.profileSettings") }}
             </li></router-link
@@ -55,7 +55,6 @@ import { useLayoutStore } from "@/stores/layout";
 import HeaderBar from "@/components/header/HeaderBar.vue";
 import { computed } from "vue";
 import { useI18n } from "vue-i18n";
-import { disableUserProfile } from "@/utils/constants";
 
 const { t } = useI18n();
 
