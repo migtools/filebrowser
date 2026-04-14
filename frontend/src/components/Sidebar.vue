@@ -130,7 +130,6 @@ import {
   disableUsedPercentage,
   disableUserProfile,
   noAuth,
-  logoutPage,
   loginPage,
 } from "@/utils/constants";
 import { files as api } from "@/api";
