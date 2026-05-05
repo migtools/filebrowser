@@ -29,6 +29,8 @@
     "rename": "Rename",
     "replace": "Replace",
     "reportIssue": "Report Issue",
+    "resumeTransfer": "Resume previous transfert",
+    "resumeTransferTooltip": "Skip all conflicting files, except the ones that are smaller on the server as we suppose that their transfert has been interrupted.",
     "save": "Save",
     "schedule": "Schedule",
     "search": "Search",
@@ -220,7 +222,6 @@
     "defaultUserDescription": "These are the default settings for new users.",
     "disableExternalLinks": "Disable external links (except documentation)",
     "disableUsedDiskPercentage": "Disable used disk percentage graph",
-    "disableUserProfile": "Disable user profile",
     "documentation": "documentation",
     "examples": "Examples",
     "executeOnShell": "Execute on shell",
@@ -282,6 +283,7 @@
     "currentPassword": "Your Current Password"
   },
   "sidebar": {
+    "diskUsed": "{used} of {total} used",
     "help": "Help",
     "hugoNew": "Hugo New",
     "login": "Login",

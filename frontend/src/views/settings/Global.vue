@@ -70,7 +70,7 @@
             <a
               class="link"
               target="_blank"
-              href="https://filebrowser.org/configuration.html#custom-branding"
+              href="https://filebrowser.org/customization.html#custom-branding"
               >{{ t("settings.documentation") }}</a
             >
           </i18n-t>
@@ -91,15 +91,6 @@
               id="branding-used-disk"
             />
             {{ t("settings.disableUsedDiskPercentage") }}
-          </p>
-
-          <p>
-            <input
-              type="checkbox"
-              v-model="settings.branding.disableUserProfile"
-              id="branding-user-profile"
-            />
-            {{ t("settings.disableUserProfile") }}
           </p>
 
           <p>
@@ -218,7 +209,7 @@
             <a
               class="link"
               target="_blank"
-              href="https://filebrowser.org/configuration.html#command-runner"
+              href="https://filebrowser.org/command-execution.html#hook-runner"
               >{{ t("settings.documentation") }}</a
             >
           </i18n-t>
