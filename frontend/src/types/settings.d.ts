@@ -31,8 +31,6 @@ interface SettingsBranding {
   name: string;
   disableExternal: boolean;
   disableUsedPercentage: boolean;
-  disableUserProfile: boolean;
-  defaultLoginUser: string;
   files: string;
   theme: UserTheme;
   color: string;
