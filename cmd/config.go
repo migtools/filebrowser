@@ -57,12 +57,9 @@ func addConfigFlags(flags *pflag.FlagSet) {
 	flags.String("branding.files", "", "path to directory with images and custom styles")
 	flags.Bool("branding.disableExternal", false, "disable external links such as GitHub links")
 	flags.Bool("branding.disableUsedPercentage", false, "disable used disk percentage graph")
-	flags.Bool("branding.disableUserProfile", false, "disable user profile in sidebar and settings/profile page")
-	flags.String("branding.defaultLoginUser", "", "default username for login (hides username field)")
-	// NB: these are string so they can be presented as octal in the help text
-	// as that's the conventional representation for modes in Unix.
-	flags.String("file-mode", fmt.Sprintf("%O", settings.DefaultFileMode), "Mode bits that new files are created with")
-	flags.String("dir-mode", fmt.Sprintf("%O", settings.DefaultDirMode), "Mode bits that new directories are created with")
+
+	flags.Uint64("tus.chunkSize", settings.DefaultTusChunkSize, "the tus chunk size")
+	flags.Uint16("tus.retryCount", settings.DefaultTusRetryCount, "the tus retry count")
 }
 
 func getAuthMethod(flags *pflag.FlagSet, defaults ...interface{}) (settings.AuthMethod, map[string]interface{}, error) {
@@ -215,8 +212,6 @@ func printSettings(ser *settings.Server, set *settings.Settings, auther auth.Aut
 	fmt.Fprintf(w, "\tFiles override:\t%s\n", set.Branding.Files)
 	fmt.Fprintf(w, "\tDisable external links:\t%t\n", set.Branding.DisableExternal)
 	fmt.Fprintf(w, "\tDisable used disk percentage graph:\t%t\n", set.Branding.DisableUsedPercentage)
-	fmt.Fprintf(w, "\tDisable user profile:\t%t\n", set.Branding.DisableUserProfile)
-	fmt.Fprintf(w, "\tDefault login user:\t%s\n", set.Branding.DefaultLoginUser)
 	fmt.Fprintf(w, "\tColor:\t%s\n", set.Branding.Color)
 	fmt.Fprintf(w, "\tTheme:\t%s\n", set.Branding.Theme)
 
@@ -234,6 +229,7 @@ func printSettings(ser *settings.Server, set *settings.Settings, auther auth.Aut
 	fmt.Fprintf(w, "\tThumbnails Enabled:\t%t\n", ser.EnableThumbnails)
 	fmt.Fprintf(w, "\tResize Preview:\t%t\n", ser.ResizePreview)
 	fmt.Fprintf(w, "\tType Detection by Header:\t%t\n", ser.TypeDetectionByHeader)
+	fmt.Fprintf(w, "\tFollow External Symlinks:\t%t\n", ser.FollowExternalSymlinks)
 
 	fmt.Fprintln(w, "\nTUS:")
 	fmt.Fprintf(w, "\tChunk size:\t%d\n", set.Tus.ChunkSize)
@@ -354,10 +350,6 @@ func getSettings(flags *pflag.FlagSet, set *settings.Settings, ser *settings.Ser
 			set.Branding.DisableExternal, err = flags.GetBool(flag.Name)
 		case "branding.disableUsedPercentage":
 			set.Branding.DisableUsedPercentage, err = flags.GetBool(flag.Name)
-		case "branding.disableUserProfile":
-			set.Branding.DisableUserProfile, err = flags.GetBool(flag.Name)
-		case "branding.defaultLoginUser":
-			set.Branding.DefaultLoginUser, err = flags.GetString(flag.Name)
 		case "tus.chunkSize":
 			set.Tus.ChunkSize, err = flags.GetUint64(flag.Name)
 		case "tus.retryCount":

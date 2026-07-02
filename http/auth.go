@@ -20,6 +20,8 @@ import (
 
 const (
 	DefaultTokenExpirationTime = time.Hour * 2
+
+	maxAuthBodySize = 1 << 20 // 1 MiB
 )
 
 type userInfo struct {
@@ -100,7 +102,7 @@ func withUser(fn handleFunc) handleFunc {
 			w.Header().Add("X-Renew-Token", "true")
 		}
 
-		d.user, err = d.store.Users.Get(d.server.Root, tk.User.ID)
+		d.user, err = d.store.Users.Get(d.server.Root, d.server.FollowExternalSymlinks, tk.User.ID)
 		if err != nil {
 			return http.StatusInternalServerError, err
 		}
@@ -120,6 +122,10 @@ func withAdmin(fn handleFunc) handleFunc {
 
 func loginHandler(tokenExpireTime time.Duration) handleFunc {
 	return func(w http.ResponseWriter, r *http.Request, d *data) (int, error) {
+		if r.Body != nil {
+			r.Body = http.MaxBytesReader(w, r.Body, maxAuthBodySize)
+		}
+
 		auther, err := d.store.Auth.Get(d.settings.AuthMethod)
 		if err != nil {
 			return http.StatusInternalServerError, err
@@ -142,7 +148,7 @@ type signupBody struct {
 	Password string `json:"password"`
 }
 
-var signupHandler = func(_ http.ResponseWriter, r *http.Request, d *data) (int, error) {
+var signupHandler = func(w http.ResponseWriter, r *http.Request, d *data) (int, error) {
 	if !d.settings.Signup {
 		return http.StatusMethodNotAllowed, nil
 	}
@@ -150,6 +156,8 @@ var signupHandler = func(_ http.ResponseWriter, r *http.Request, d *data) (int, 
 	if r.Body == nil {
 		return http.StatusBadRequest, nil
 	}
+
+	r.Body = http.MaxBytesReader(w, r.Body, maxAuthBodySize)
 
 	info := &signupBody{}
 	err := json.NewDecoder(r.Body).Decode(info)
@@ -193,6 +201,22 @@ var signupHandler = func(_ http.ResponseWriter, r *http.Request, d *data) (int, 
 		return http.StatusInternalServerError, err
 	}
 	user.Scope = userHome
+
+	// When home directories are created from the username, distinct usernames
+	// can normalize to the same scope (cleanUsername is many-to-one), which would
+	// silently hand the new user another user's home directory. Reject the signup
+	// if the derived scope is already taken. When CreateUserDir is off, all
+	// signups intentionally share the configured default scope, so this check
+	// does not apply.
+	if d.settings.CreateUserDir {
+		switch _, err := d.store.Users.GetByScope(user.Scope); {
+		case err == nil:
+			return http.StatusConflict, fberrors.ErrExist
+		case !errors.Is(err, fberrors.ErrNotExist):
+			return http.StatusInternalServerError, err
+		}
+	}
+
 	log.Printf("new user: %s, home dir: [%s].", user.Username, userHome)
 
 	err = d.store.Users.Save(user)
