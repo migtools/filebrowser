@@ -15,12 +15,11 @@ import (
 	"strings"
 	"time"
 
-	"github.com/shirou/gopsutil/v4/disk"
-	"github.com/spf13/afero"
-
 	fberrors "github.com/filebrowser/filebrowser/v2/errors"
 	"github.com/filebrowser/filebrowser/v2/files"
 	"github.com/filebrowser/filebrowser/v2/fileutils"
+	"github.com/shirou/gopsutil/v4/disk"
+	"github.com/spf13/afero"
 )
 
 var resourceGetHandler = withUser(func(w http.ResponseWriter, r *http.Request, d *data) (int, error) {
@@ -100,7 +99,7 @@ func resourceDeleteHandler(fileCache FileCache) handleFunc {
 			return errToStatus(err), err
 		}
 
-		err = d.store.Share.DeleteWithPathPrefix(file.Path)
+		err = d.store.Share.DeleteWithPathPrefix(file.Path, d.user.ID)
 		if err != nil {
 			log.Printf("WARNING: Error(s) occurred while deleting associated shares with file: %s", err)
 		}
@@ -425,7 +424,10 @@ var resourceGetRecursiveHandler = withUser(func(w http.ResponseWriter, r *http.R
 		}
 
 		entries = append(entries, RecursiveEntry{
-			Path:    fPath,
+			// afero.Walk joins paths with the OS separator, so on Windows fPath
+			// uses backslashes. The web API contract is forward slashes, so
+			// normalize it here (mirrors search/search.go).
+			Path:    filepath.ToSlash(fPath),
 			Name:    info.Name(),
 			Size:    info.Size(),
 			ModTime: info.ModTime(),
