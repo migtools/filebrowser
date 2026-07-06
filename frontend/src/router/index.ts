@@ -12,7 +12,7 @@ import ProfileSettings from "@/views/settings/Profile.vue";
 import Shares from "@/views/settings/Shares.vue";
 import Errors from "@/views/Errors.vue";
 import { useAuthStore } from "@/stores/auth";
-import { baseURL, name, disableUserProfile } from "@/utils/constants";
+import { baseURL, name } from "@/utils/constants";
 import i18n from "@/i18n";
 import { recaptcha, loginPage } from "@/utils/constants";
 import { login, validateLogin } from "@/utils/auth";
@@ -145,8 +145,11 @@ const routes = [
   },
   {
     path: "/:catchAll(.*)*",
-    redirect: (to: RouteLocation) =>
-      `/files/${[...to.params.catchAll].join("/")}`,
+    redirect: (to: RouteLocation) => {
+      const catchAll = to.params.catchAll;
+      if (!catchAll) return "/files/";
+      return `/files/${Array.isArray(catchAll) ? catchAll.join("/") : catchAll}`;
+    },
   },
 ];
 
@@ -194,22 +197,6 @@ router.beforeResolve(async (to, from, next) => {
 
   if (to.path.endsWith("/login") && authStore.isLoggedIn) {
     next({ path: "/files/" });
-    return;
-  }
-
-  // Redirect from /settings/profile if user profile is disabled
-  if (disableUserProfile && to.name === "ProfileSettings") {
-    next({ path: "/files/" });
-    return;
-  }
-
-  // Redirect from /settings to appropriate page when user profile is disabled
-  if (disableUserProfile && to.path === "/settings") {
-    if (authStore.user?.perm.admin) {
-      next({ path: "/settings/global" });
-    } else {
-      next({ path: "/settings/shares" });
-    }
     return;
   }
 
