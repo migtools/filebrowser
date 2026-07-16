@@ -29,6 +29,8 @@
     "rename": "Mudar o nome",
     "replace": "Substituir",
     "reportIssue": "Reportar problema",
+    "resumeTransfer": "Resume previous transfer",
+    "resumeTransferTooltip": "Skip all conflicting files, except the ones that are smaller on the server as we suppose that their transfert has been interrupted.",
     "save": "Guardar",
     "schedule": "Agendar",
     "search": "Pesquisar",
@@ -236,7 +238,7 @@
     "newPasswordConfirm": "Confirmar a sua palavra-passe",
     "newUser": "Novo Utilizador",
     "password": "Palavra-passe",
-    "passwordUpdated": "Palavras-passe não coincidem!",
+    "passwordUpdated": "Palavra-passe atualizada!",
     "path": "Caminho",
     "perm": {
       "create": "Criar ficheiros e pastas",
