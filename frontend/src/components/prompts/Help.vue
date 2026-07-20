@@ -7,8 +7,8 @@
     <div class="card-content">
       <ul>
         <li><strong>F1</strong> - {{ $t("help.f1") }}</li>
-        <li v-if="authStore.user?.perm.rename"><strong>F2</strong> - {{ $t("help.f2") }}</li>
-        <li v-if="authStore.user?.perm.delete"><strong>DEL</strong> - {{ $t("help.del") }}</li>
+        <li><strong>F2</strong> - {{ $t("help.f2") }}</li>
+        <li><strong>DEL</strong> - {{ $t("help.del") }}</li>
         <li><strong>ESC</strong> - {{ $t("help.esc") }}</li>
         <li><strong>CTRL + S</strong> - {{ $t("help.ctrl.s") }}</li>
         <li><strong>CTRL + SHIFT + F</strong> - {{ $t("help.ctrl.f") }}</li>
@@ -37,16 +37,9 @@
 <script>
 import { mapActions } from "pinia";
 import { useLayoutStore } from "@/stores/layout";
-import { useAuthStore } from "@/stores/auth";
 
 export default {
   name: "help",
-  setup() {
-    const authStore = useAuthStore();
-    return {
-      authStore,
-    };
-  },
   methods: {
     ...mapActions(useLayoutStore, ["closeHovers"]),
   },

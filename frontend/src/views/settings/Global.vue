@@ -94,15 +94,6 @@
           </p>
 
           <p>
-            <input
-              type="checkbox"
-              v-model="settings.branding.disableUserProfile"
-              id="branding-user-profile"
-            />
-            {{ t("settings.disableUserProfile") }}
-          </p>
-
-          <p>
             <label for="theme">{{ t("settings.themes.title") }}</label>
             <themes
               class="input input--block"
