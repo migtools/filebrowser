@@ -12,7 +12,7 @@ import ProfileSettings from "@/views/settings/Profile.vue";
 import Shares from "@/views/settings/Shares.vue";
 import Errors from "@/views/Errors.vue";
 import { useAuthStore } from "@/stores/auth";
-import { baseURL, name, disableUserProfile } from "@/utils/constants";
+import { baseURL, name } from "@/utils/constants";
 import i18n from "@/i18n";
 import { recaptcha, loginPage } from "@/utils/constants";
 import { login, validateLogin } from "@/utils/auth";
@@ -180,7 +180,7 @@ const router = createRouter({
   routes,
 });
 
-router.beforeResolve(async (to, from, next) => {
+router.beforeResolve(async (to, from) => {
   const title = i18n.global.t(titles[to.name as keyof typeof titles]);
   document.title = title + " - " + name;
 
@@ -196,45 +196,25 @@ router.beforeResolve(async (to, from, next) => {
   }
 
   if (to.path.endsWith("/login") && authStore.isLoggedIn) {
-    next({ path: "/files/" });
-    return;
-  }
-
-  // Redirect from /settings/profile if user profile is disabled
-  if (disableUserProfile && to.name === "ProfileSettings") {
-    next({ path: "/files/" });
-    return;
-  }
-
-  // Redirect from /settings to appropriate page when user profile is disabled
-  if (disableUserProfile && to.path === "/settings") {
-    if (authStore.user?.perm.admin) {
-      next({ path: "/settings/global" });
-    } else {
-      next({ path: "/settings/shares" });
-    }
-    return;
+    return { path: "/files/" };
   }
 
   if (to.matched.some((record) => record.meta.requiresAuth)) {
     if (!authStore.isLoggedIn) {
-      next({
+      return {
         path: "/login",
         query: { redirect: to.fullPath },
-      });
-
-      return;
+      };
     }
 
     if (to.matched.some((record) => record.meta.requiresAdmin)) {
       if (authStore.user === null || !authStore.user.perm.admin) {
-        next({ path: "/403" });
-        return;
+        return { path: "/403" };
       }
     }
   }
 
-  next();
+  return;
 });
 
 export { router, router as default };

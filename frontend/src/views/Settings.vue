@@ -5,7 +5,7 @@
     <div id="nav">
       <div class="wrapper">
         <ul>
-          <router-link to="/settings/profile" v-if="!disableUserProfile"
+          <router-link to="/settings/profile"
             ><li :class="{ active: $route.path === '/settings/profile' }">
               {{ t("settings.profileSettings") }}
             </li></router-link
@@ -34,6 +34,24 @@
       </div>
     </div>
 
+    <div class="card" v-if="user?.perm.admin">
+      <div class="card-title">
+        <h2>{{ t("settings.sunsetTitle") }}</h2>
+      </div>
+
+      <div class="card-content">
+        <p>{{ t("settings.sunsetBody") }}</p>
+        <p>
+          <a
+            href="https://github.com/filebrowser/filebrowser#security"
+            target="_blank"
+            rel="noopener noreferrer"
+            >{{ t("settings.sunsetLink") }}</a
+          >
+        </p>
+      </div>
+    </div>
+
     <div v-if="loading">
       <h2 class="message delayed">
         <div class="spinner">
@@ -55,7 +73,6 @@ import { useLayoutStore } from "@/stores/layout";
 import HeaderBar from "@/components/header/HeaderBar.vue";
 import { computed } from "vue";
 import { useI18n } from "vue-i18n";
-import { disableUserProfile } from "@/utils/constants";
 
 const { t } = useI18n();
 
