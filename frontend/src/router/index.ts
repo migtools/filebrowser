@@ -201,18 +201,16 @@ router.beforeResolve(async (to, from) => {
 
   // Redirect from /settings/profile if user profile is disabled
   if (disableUserProfile && to.name === "ProfileSettings") {
-    next({ path: "/files/" });
-    return;
+    return { path: "/files/" };
   }
 
   // Redirect from /settings to appropriate page when user profile is disabled
   if (disableUserProfile && to.path === "/settings") {
     if (authStore.user?.perm.admin) {
-      next({ path: "/settings/global" });
+      return { path: "/settings/global" };
     } else {
-      next({ path: "/settings/shares" });
+      return { path: "/settings/shares" };
     }
-    return;
   }
 
   if (to.matched.some((record) => record.meta.requiresAuth)) {
